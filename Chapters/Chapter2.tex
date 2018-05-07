@@ -109,8 +109,50 @@ The authentication server is a Node.js \cite{nodejs} webserver that facilitates 
   \item The service must then send another POST request to Tequila with the \textit{urlaccess} token as a payload. Tequila replies with the user details and parameters requested in the initial request if the authentication was successful or an error is returned otherwise.
 \end{enumerate}
 
-It should be noted that as of now Tequila only allows verifying the \textit{urlaccess} token mentioned in the last step of the protocol only once. Any further attempts to validation results in an error being returned. In our context, the authentication server acts as the service that interacts with Tequila. On confirmation of successful authentication of the user from Tequila, the authentication server generates a Schnorr signature which is stored in the browser’s localStorage \cite{localStorage}. This signature is used to verify all transactions that store data in the skipchains by the conodes which are configured with the authentication server’s public key (as a field in the Master Block of Master Skipchain).
+It should be noted that as of now Tequila only allows verifying the \textit{urlaccess} token mentioned in the last step of the protocol only once. Any further attempts to validation results in an error being returned. In our context, the authentication server acts as the service that interacts with Tequila. On confirmation of successful authentication of the user from Tequila, the authentication server generates a Schnorr signature which is stored in the browser’s localStorage \cite{localStorage}. This signature is used to verify all transactions as described in the next subsection about Cothority.
 
 \subsection{Cothority}
 
 A collective authority or cothority \cite{cothority} is a set of nodes that witness a particular transaction in a Skipchain and a threshold number of nodes collectively authorise it to be stored. The framework is a research project at the DEDIS laboratory at EPFL, allowing easy deployment of decentralised and distributed services and protocols. The conodes participating in the election run the evoting and skipchain service for orchestrating the elections and storing the data in skipchains respectively.
+
+The skipchain service in cothority allows execution of a verifier function which is run by all the participating nodes in the election roster. All transactions that write data to the skipchain have user identity verification as a part of the verification function. This user identification involves validating the  Schnorr signature of the concatenation of user's identifier (sciper) and the Master Skipchain's Genesis Block Hash against the Authentication Server's public key which is stored in the Master Skipchain's Master Block.
+
+\section{Protocols}
+
+The evoting system runs protocols at different stages of the election process to perform operations in a distributed manner. The cothority framework helps in the implementation and testing of these distributed protocols.
+
+\subsection{Distributed Key Generation (DKG)}
+The cothority framework contains an implementation of the Distributed Key Generation (DKG) protocol by Gennaro et. al. \cite{gennaro1999secure}. DKG distributes the secret key over a set of nodes, thereby disallowing any particular server the capability of shuffle or decrypt the ballots.
+
+The protocol begins with each node $N_i$ calculating a secret share $s_i$. This is followed by a series of message exchanges that removes potentially malicious nodes and results in a set of qualified nodes \textit{QUAL}. The aggregate secret $x$ is the sum of all the individual secrets of qualified nodes
+$x = \sum_{i \in \textit{QUAL}}s_i$. The corresponding public key can be calculated as $y = gx$. The DKG protocol is executed whenever an election administrator requests a new election to be created. Every participating node generates its secret and the aggregate public key is stored in the newly created election skipchain along with other Election Metadata. It is this public key which is used by the frontend client to encrypt the user ballots. The protocol is initialised with a threshold that requires at least \( \lfloor\dfrac{2n}{3}\rfloor + 1 \) nodes to reconstruct the decryptions later where $n$ is the total number of nodes in the roster.
+
+\subsection{Shuffle}
+
+Once the election ends, the election creator may initiate the shuffle protocol which re-encrypts, permutes and appends the result on the election skipchain providing a proof of the shuffle. The shuffle protocol proceeds as follows:
+
+\begin{enumerate}
+  \item The protocol begins with the leader node being contacted by the client to initiate the shuffle. The leader first checks the presence of a threshold number of shuffles already in the skipchain and exits if so.
+  \item In the presence of shuffle blocks lesser than the threshold number required, the leader prepares a list of servers which may participate in this instance of the shuffle, excluding the ones that participated before.
+  \item In the first attempt at generating the shuffle, the leader iterates through the election skipchain, finding the last ballot cast by each user and appending it to a list. This list is then passed on as an input to the Neff Shuffle function. On the other hand, other attempts at shuffle rely on the last shuffle that is stored in the skipchain and use it as the input to the Neff Shuffle function.
+  \item The Neff Shuffle function then permutes the ballots and outputs a permuted list of ballots and a corresponding proof. The node which created the permutation requests the storage of the shuffle which must be ratified by a threshold of participating conodes in the election. In order to ascertain its identity, the node also signs its public key and stores it as a part of the block data along with its public key in clear text.
+  \item On receiving a request to store the shuffle block, the  participating nodes verify the identity of the node which proposed the shuffle by checking the signature of the public key included in the transaction. They then ensure that the election skipchain does not already have a threshold number of shuffle blocks and the node which has proposed the given shuffle has not stored a shuffle previously. The nodes then run the Neff Shuffle proof verifying the integrity of the shuffle. If all these checks are ratified by a threshold number of participating nodes the shuffle is stored in the skipchain
+  \item The proposer then requests the next server in the list to repeat the shuffle until we get a threshold number of shuffles in the skipchain or the protocol times out.
+\end{enumerate}
+
+It should be noted that the shuffle protocol is resilient to failures due to non availability of nodes and timeouts. At every attempt, the protocol tries to pick off from the point where it was abandoned.
+
+\subsection{Decrypt}
+
+The decrypt protocol is used to store a threshold number of partial decryptions by the participating nodes. The protocol proceeds as follows:
+
+\begin{enumerate}
+  \item The protocol begins with the leader node being contacted by the client to initiate the decryption. The leader first checks the presence of a threshold number of decryptions already in the skipchain and exits if so.
+  \item In the presence of partial decryptions lesser than the threshold number required, the leader prepares a list of servers which may participate in this instance of the decrypt protocol, excluding the ones that participated before.
+  \item The leader then sends a broadcast to the whitelisted servers and prompts them to partially decrypt the last shuffle stored in the skipchain using their share of the private secret generated during the DKG protocol.
+  \item Every node tries to store their partial shuffle on the skipchain. The participating nodes run the verification function which checks if the election skipchain has threshold number of shuffles in place, verifies the identity of the proposing node by checking the signature of its public key included in the transaction, checks if the node has not stored a partial decryption before.
+  \item If all the checks pass, the shuffle is stored on the skipchain. The node then sends a reply back to the leader indicating success or failure.
+  \item The leader maintains a count of successful partial decryptions and ends the protocol as soon as a threshold number of success messages are received.
+ \end{enumerate}
+ 
+ Like the shuffle protocol, the decrypt protocol is also resilient to failure due to non availability of nodes and timeouts. Every reinitialisation of the protocol results in an attempt to pick off from the previous failed attempt.
