@@ -1,0 +1,78 @@
+% Chapter Template
+
+\chapter{System Design and Architecture} % Main chapter title
+
+\label{Chapter2} % Change X to a consecutive number; for referencing this chapter elsewhere, use \ref{ChapterX}
+
+\lhead{Chapter 2. \emph{System Design and Architecture}} % Change X to a consecutive number; this is for the header on each page - perhaps a shortened title
+
+%----------------------------------------------------------------------------------------
+%	SECTION 1
+%----------------------------------------------------------------------------------------
+
+\section{Election Data Structure}
+
+\subsection{Skipchains}
+
+The evoting system makes extensive use of a tamper proof blockchain like data structure called Skipchains \cite{skipchains}. An amalgamation of blockchain and skiplists, Skipchains allows clients to traverse forward and backwards in a linear data structure using multi hop links in logarithmic time. As in blockchains, the backward links are cryptographic hashes of the previous blocks. However, the forward links are collective cryptographic signatures of future blocks and are added once the future block is stored.
+
+\begin{figure}[ht]
+  \centering
+    \includegraphics[scale=0.4]{Figures/MasterSkipchain.png}
+    \rule{35em}{0.5pt}
+  \caption[Master Skipchain]{}
+  \label{fig:MasterSkipchain}
+\end{figure}
+
+\subsection{Master Skipchain}
+
+The evoting service is built to support multiple independent elections from the ground up. The global configuration common to a set of elections, and references to those elections themselves are stored in a Skipchain called the Master Skipchain.
+
+Figure \ref{fig:MasterSkipchain} shows an example of a Master Skipchain. The first block, called the genesis block is empty and contains no data. The next block, called the Master Block contains the following configurations
+
+\begin{itemize}
+\item Admins: a list of unique 6 digit identifiers for denoting election administrators who may create new elections and finalise them.
+\item Roster: a list of servers, called conodes which will participate in the election process.
+\item Key: an Ed25519 Public Key used to verify user authentication signature.
+\end{itemize}
+
+The remaining blocks, called the election blocks are references to Election Skipchains described in the next subsection.
+
+\subsection{Election Skipchain}
+
+All information associated with a particular election is stored in a sidechain, called the Election Skipchain. The Master Skipchain stores a reference to the genesis block of this sidechain in Link Skipblocks.
+
+\begin{figure}[ht]
+  \centering
+    \includegraphics[scale=0.4]{Figures/ElectionSkipchain.png}
+    \rule{35em}{0.5pt}
+  \caption[Election Skipchain]{}
+  \label{fig:ElectionSkipchain}
+\end{figure}
+
+As depicted in Figure \ref{fig:ElectionSkipchain}, the Election Skipchain contains an Election block which stores information associated with the specific election. It contains the following configuration values:
+
+\begin{itemize}
+\item Name: Election Title with support for translations in different languages.
+\item Creator: Identifier of the administrator who created the election.
+\item Users: list of identifiers of users who may vote in this election.
+\item Key: an aggregate public key generated using the DKG Protocol \cite{dkg}, which is used to encrypt the ballots.
+\item Stage: the current status of election - it may be Running i.e. users may cast their vote, shuffled i.e. the ballots have been mixes or Decrypted i.e. the ballots have been partially decrypted by participating nodes
+\item Subtitle: Election Subtitle with support for translations in different languages
+\item Start: Timestamp to denote the start of election
+\item End: Timestamp to denote end of election
+\item Metadata: other keys which store metadata related to the election
+\end{itemize}
+
+After the Election Block, the election skipchain consists of a series of Ballot blocks which are stored whenever a user casts a vote. The contents of the Ballot Block include an encrypted ElGamal Ciphertext using the Election Key described above. The user's ballot is encoded in a random point, say $m$ on the Ed25519 Curve \cite{ed25519}. The encryption algorithm then proceeds as follows:
+
+\begin{enumerate}
+  \item Alice picks a random \( x \in \mathbb{Z}_{n} \) and computes \( y = gx \). Let $x$ be Alice's secret key and $y$ be her public key.
+  \item Bob encrypts a message \( m \in \langle g \rangle \) by selecting a random value \( r \in \mathbb{Z}_{n} \) and computing \( u = gr \) and \( v= m + yr \).
+  \item \( (u, v) \) is the ciphertext sent to Alice.
+  \item Alice may decrypt the message by recomputing the secret \( s = ux = grx = yr \) and extracts the message with \( m = v - s = m + yr - yr \).
+\end{enumerate}
+
+The Ballot Block also contains an identifier for the user who cast the vote. Since the evoting system allows a user to cast multiple ballots, this field is used to determine the last cast ballot for every user before performing the first shuffle.
+
+Once the election is finalised, the election administrator may initiate the shuffle and decrypt protocol which result in the addition of Shuffle and Decrypt blocks in the skipchain. The Shuffle blocks contain a permutation of last cast ballot by every user which participated in the election and a verifiable proof of the mix which is verified by a threshold number of nodes before the block is stored in the skipchain. The decrypt blocks are partial decryptions performed by a threshold number of participating nodes on the ballot encryption contained in the last shuffle block.

@@ -145,7 +145,7 @@ Date:\\
     {\normalsize
 This is to certify that the thesis entitled, ``\emph{\ttitle}'' and submitted by
 \underline{\authornames} ID No. \underline{\idnum} in partial fulfillment of the
-requirements of \ccode{} \cname{}embodies the work done by him under my
+requirements of \ccode{} \cname{} embodies the work done by him under my
 supervision.\\[2.5cm]
 \begin{minipage}{0.5\textwidth}
     \begin{flushleft} \large

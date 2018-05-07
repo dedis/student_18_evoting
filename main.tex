@@ -62,20 +62,15 @@
 \maketitle
 \Declaration
 \Certificate
-\Quotation{Thanks to my solid academic training, today I can write hundreds of
-words on virtually any topic without possessing a shred of information, which is
-how I got a good job in journalism.}{Dave Barry}
 
 \begin{abstract}
-The Thesis Abstract is written here (and usually kept to just this page).
-The page is kept centered vertically so can expand into the blank space above
-the title too\ldots
+In this work, we present an implementation of an electronic voting scheme based on a decentralised and distributed architecture to conduct elections in EPFL. The system makes use of a blockchain like data structure, called Skipchains to record and store every stage associated with the election. The ballots associated with the election are stored as encrypted ElGamal Pairs which is later shuffled and verified by a threshold of participating nodes. A threshold number of nodes also participate in partially decrypting the ballots which allow reconstructing the final vote count. The system design, therefore, allows independent auditors and voters to validate each stage of the election - from the ballots being recorded in the chain, to them being shuffled and decrypted partially with a distributed set of nodes reaching consensus at every stage.
 \end{abstract}
 
-\begin{acknowledgements}
-The acknowledgements and the people to thank go here, don't forget to include
-your project advisor\ldots
-\end{acknowledgements}
+
+% \begin{acknowledgements}
+
+% \end{acknowledgements}
 
 %-------------------------------------------------------------------------------
 %	LIST OF CONTENTS/FIGURES/TABLES PAGES
@@ -92,65 +87,65 @@ your project advisor\ldots
 \lhead{\emph{List of Figures}}
 \listoffigures % Write out the List of Figures
 
- % Set the left side page header to "List of Tables"
-\lhead{\emph{List of Tables}}
-\listoftables % Write out the List of Tables
+% Set the left side page header to "List of Tables"
+% \lhead{\emph{List of Tables}}
+% \listoftables % Write out the List of Tables
 
 %-------------------------------------------------------------------------------
 %	ABBREVIATIONS
 %-------------------------------------------------------------------------------
 
-\clearpage % Start a new page
+% \clearpage % Start a new page
 
  % Set the line spacing to 1.5, this makes the following tables easier to read
-\setstretch{1.5}
+% \setstretch{1.5}
 
-\lhead{\emph{Abbreviations}} % Set the left side page header to "Abbreviations"
-\listofsymbols{ll} % Include a list of Abbreviations (a table of two columns)
-{
-\textbf{LAH} & \textbf{L}ist \textbf{A}bbreviations \textbf{H}ere \\
+% \lhead{\emph{Abbreviations}} % Set the left side page header to "Abbreviations"
+% \listofsymbols{ll} % Include a list of Abbreviations (a table of two columns)
+% {
+% \textbf{LAH} & \textbf{L}ist \textbf{A}bbreviations \textbf{H}ere \\
 %\textbf{Acronym} & \textbf{W}hat (it) \textbf{S}tands \textbf{F}or \\
-}
+% }
 
 %-------------------------------------------------------------------------------
 %	PHYSICAL CONSTANTS/OTHER DEFINITIONS
 %-------------------------------------------------------------------------------
 
-\clearpage % Start a new page
+% \clearpage % Start a new page
 
 % Set the left side page header to "Physical Constants"
-\lhead{\emph{Physical Constants}}
+% \lhead{\emph{Physical Constants}}
 
- % Include a list of Physical Constants (a four column table)
-\listofconstants{lrcl}
-{
-Speed of Light & $c$ & $=$ & $2.997\ 924\ 58\times10^{8}\ \mbox{ms}^{-\mbox{s}}$ (exact)\\
+% Include a list of Physical Constants (a four column table)
+% \listofconstants{lrcl}
+% {
+%^ Speed of Light & $c$ & $=$ & $2.997\ 924\ 58\times10^{8}\ \mbox{ms}^{-\mbox{s}}$ (exact)\\
 % Constant Name & Symbol & = & Constant Value (with units) \\
-}
+% }
 
 %-------------------------------------------------------------------------------
 %	SYMBOLS
 %-------------------------------------------------------------------------------
 
-\clearpage % Start a new page
+%\clearpage % Start a new page
 
-\lhead{\emph{Glossary}} % Set the left side page header to "Symbols"
+% \lhead{\emph{Glossary}} % Set the left side page header to "Symbols"
 
-\listofnomenclature % List the nomenclature. (We use the glossaries package)
+% \listofnomenclature % List the nomenclature. (We use the glossaries package)
 
 %-------------------------------------------------------------------------------
 %	DEDICATION
 %-------------------------------------------------------------------------------
 
-\setstretch{1.3} % Return the line spacing back to 1.3
+%\setstretch{1.3} % Return the line spacing back to 1.3
 
-\pagestyle{empty} % Page style needs to be empty for this page
+%\pagestyle{empty} % Page style needs to be empty for this page
 
 % Dedication text
-\Dedicatory{I would like to dedicate this thesis to my University which taught
-me how to deal with all sorts of bureaucracy while doing real work.}
+%\Dedicatory{I would like to dedicate this thesis to my University which taught
+%me how to deal with all sorts of bureaucracy while doing real work.}
 
-\addtocontents{toc}{\vspace{2em}} % Add a gap in the Contents, for aesthetics
+% \addtocontents{toc}{\vspace{2em}} % Add a gap in the Contents, for aesthetics
 
 %-------------------------------------------------------------------------------
 %	THESIS CONTENT - CHAPTERS
@@ -164,7 +159,7 @@ me how to deal with all sorts of bureaucracy while doing real work.}
 % Uncomment the lines as you write the chapters
 
 \input{Chapters/Chapter1}
-%\input{Chapters/Chapter2}
+\input{Chapters/Chapter2}
 %\input{Chapters/Chapter3}
 %\input{Chapters/Chapter4}
 %\input{Chapters/Chapter5}
