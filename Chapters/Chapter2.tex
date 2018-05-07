@@ -20,7 +20,7 @@ The evoting system makes extensive use of a tamper proof blockchain like data st
   \centering
     \includegraphics[scale=0.4]{Figures/MasterSkipchain.png}
     \rule{35em}{0.5pt}
-  \caption[Master Skipchain]{}
+  \caption[Master Skipchain]{Master Skipchain}
   \label{fig:MasterSkipchain}
 \end{figure}
 
@@ -46,7 +46,7 @@ All information associated with a particular election is stored in a sidechain, 
   \centering
     \includegraphics[scale=0.4]{Figures/ElectionSkipchain.png}
     \rule{35em}{0.5pt}
-  \caption[Election Skipchain]{}
+  \caption[Election Skipchain]{Election Skipchain}
   \label{fig:ElectionSkipchain}
 \end{figure}
 
@@ -76,3 +76,41 @@ After the Election Block, the election skipchain consists of a series of Ballot 
 The Ballot Block also contains an identifier for the user who cast the vote. Since the evoting system allows a user to cast multiple ballots, this field is used to determine the last cast ballot for every user before performing the first shuffle.
 
 Once the election is finalised, the election administrator may initiate the shuffle and decrypt protocol which result in the addition of Shuffle and Decrypt blocks in the skipchain. The Shuffle blocks contain a permutation of last cast ballot by every user which participated in the election and a verifiable proof of the mix which is verified by a threshold number of nodes before the block is stored in the skipchain. The decrypt blocks are partial decryptions performed by a threshold number of participating nodes on the ballot encryption contained in the last shuffle block.
+
+\section{Architecture}
+
+\begin{figure}[ht]
+  \centering
+    \includegraphics[scale=0.6]{Figures/Architecture.png}
+    \rule{35em}{0.5pt}
+  \caption[Architecture]{Architecture}
+  \label{fig:Architecture}
+  \source{Linus Gasser}
+\end{figure}
+
+The implementation can be divided into three different components
+
+\begin{enumerate}
+  \item A web server that serves static HTML and Javascript files that make up the frontend client.
+  \item A web server that acts as an intermediary to authenticate a user against EPFL’s authentication system.
+  \item A set of servers, called a \textit{cothority}, with each individual server called a \textit{conode}, which are responsible for handling various protocols associated with the election in a distributed manner.
+\end{enumerate}
+
+\subsection{Frontend Webserver}
+The frontend server is responsible for serving static HTML and Javascript files to the client. This can be done using any appropriate web server like Nginx \cite{nginx}. The frontend client configuration contains a reference to the Hash of the Master Skipchain and is used to fetch the list of all elections a user may participate in.
+
+\subsection{Authentication Server}
+The authentication server is a Node.js \cite{nodejs} webserver that facilitates authentication between the user and Tequila, EPFL’s authentication service \cite{tequila}. Tequila allows users to authenticate with the following protocol
+
+\begin{enumerate}
+  \item The service sends a POST request to Tequila with the service’s name, redirection URL and requested parameters as the payload. Tequila then replies with a \textit{urlaccess} token.
+  \item The service then redirects the user to Tequila. The \textit{urlaccess} token retrieved before is appended as a query parameter to the GET request
+  \item Tequila verifies the user details on submission and redirects the user to the redirection URL for the specified \textit{urlaccess} token irrespective of whether the authentication succeeds or not
+  \item The service must then send another POST request to Tequila with the \textit{urlaccess} token as a payload. Tequila replies with the user details and parameters requested in the initial request if the authentication was successful or an error is returned otherwise.
+\end{enumerate}
+
+It should be noted that as of now Tequila only allows verifying the \textit{urlaccess} token mentioned in the last step of the protocol only once. Any further attempts to validation results in an error being returned. In our context, the authentication server acts as the service that interacts with Tequila. On confirmation of successful authentication of the user from Tequila, the authentication server generates a Schnorr signature which is stored in the browser’s localStorage \cite{localStorage}. This signature is used to verify all transactions that store data in the skipchains by the conodes which are configured with the authentication server’s public key (as a field in the Master Block of Master Skipchain).
+
+\subsection{Cothority}
+
+A collective authority or cothority \cite{cothority} is a set of nodes that witness a particular transaction in a Skipchain and a threshold number of nodes collectively authorise it to be stored. The framework is a research project at the DEDIS laboratory at EPFL, allowing easy deployment of decentralised and distributed services and protocols. The conodes participating in the election run the evoting and skipchain service for orchestrating the elections and storing the data in skipchains respectively.
