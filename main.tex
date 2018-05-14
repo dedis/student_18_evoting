@@ -63,17 +63,20 @@
 %   NON-CONTENT PAGES
 %-------------------------------------------------------------------------------
 \maketitle
-\Declaration
+%\Declaration
 \Certificate
 
 \begin{abstract}
-In this work, we present an implementation of an electronic voting scheme based on a decentralised and distributed architecture to conduct elections in EPFL. The system makes use of a blockchain like data structure, called Skipchains to record and store every stage associated with the election. The ballots associated with the election are stored as encrypted ElGamal Pairs which is later shuffled and verified by a threshold of participating nodes. A threshold number of nodes also participate in partially decrypting the ballots which allow reconstructing the final vote count. The system design, therefore, allows independent auditors and voters to validate each stage of the election - from the ballots being recorded in the chain, to them being shuffled and decrypted partially with a distributed set of nodes reaching consensus at every stage.
+In this work, we present an implementation of an electronic voting scheme based on a decentralised and distributed architecture to conduct elections in EPFL. The system makes use of a blockchain like data structure, called Skipchains to record and store every stage associated with the election. The ballots associated with the election are stored as encrypted ElGamal Pairs which are later shuffled and verified by a threshold of participating nodes. A threshold number of nodes also participate in decrypting the ballots with their share of a private secret, allowing reconstruction of the final vote count. The system design, therefore, allows independent auditors and voters to validate each stage of the election - from the ballots being recorded in the chain, to them being shuffled and decrypted with a distributed set of nodes reaching consensus at every stage.
 \end{abstract}
 
 
-% \begin{acknowledgements}
+\begin{acknowledgements}
+I'd like to take this opportunity to express my gratitude to my supervisor, Prof. Bryan Ford, for giving me an opportunity to work on this project. As someone with not much prior hands on experience on working with decentralised and distributed systems, I'm glad that I got an opportunity to work on this project under his supervision and learn so much out of it. I'm also grateful to Prof. Neena Goveas for her guidance and support throughout my undergraduate study.
 
-% \end{acknowledgements}
+I'd also like to thank Mr. Linus Gasser and Mr. Jeffrey Allen. This project would not have seen the light of day without their help and guidance. Many thanks to my colleagues at the DEDIS Lab, EPFL, specially Philipp, Kelong, Nicolas and Cristina who've helped me with their valuable feedback time and again.
+
+\end{acknowledgements}
 
 %-------------------------------------------------------------------------------
 %	LIST OF CONTENTS/FIGURES/TABLES PAGES
@@ -164,8 +167,8 @@ In this work, we present an implementation of an electronic voting scheme based 
 \input{Chapters/Chapter1}
 \input{Chapters/Chapter2}
 \input{Chapters/Chapter3}
-%\input{Chapters/Chapter4}
-%\input{Chapters/Chapter5}
+\input{Chapters/Chapter4}
+\input{Chapters/Chapter5}
 %\input{Chapters/Chapter6}
 %\input{Chapters/Chapter7}
 

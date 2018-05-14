@@ -1,0 +1,17 @@
+# clustered graph example from Derek Bruening's CGO 2005 talk
+=cluster;P95;P99
+# green instead of gray since not planning on printing this
+colors=med_blue,red
+=table
+yformat=%g
+max=223
+=norotate
+ylabel=Response Time (ms)
+xlabel=Transactions per second
+# stretch it out in x direction
+xscale=1.2
+
+#			95p		99p
+2			168.2	184.1
+3			170.7	199.7
+5			158.5	222.2

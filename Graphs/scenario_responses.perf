@@ -1,0 +1,16 @@
+=stacked;Completed;Errors
+colors=med_blue,red
+# =nolegoutline
+legendfill=
+=table
+=norotate
+=nogridy
+=noupperright
+xlabel=Transactions per second
+ylabel=Transaction Count
+yscale=2
+max=9000
+
+2	3599	  1
+3	5365	 35
+5	8819	181

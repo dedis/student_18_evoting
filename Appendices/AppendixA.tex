@@ -20,6 +20,7 @@ message LookupSciperReply {
 	required string title = 4;
 }
 
+// Election message represents an election being conducted
 message Election {
     map<string, string> name = 1;
     optional uint32 creator = 2;
@@ -41,6 +42,7 @@ message Election {
     optional bytes voted = 18;
 }
 
+// Master message is used to store global configurations for all elections.
 message Master {
     required bytes id = 1;
     required Roster roster = 2;
@@ -48,6 +50,7 @@ message Master {
     required bytes key = 4;
 }
 
+// Footer message contains election metadata.
 message Footer {
   required string text = 1;
   required string contactTitle = 2;
@@ -55,16 +58,19 @@ message Footer {
   required string contactEmail = 4;
 }
 
+// Ballot message is used to store the encrypted user ballots.
 message Ballot {
     required uint32 user = 1;
     required bytes alpha = 2;
     required bytes beta = 3;
 }
 
+// Ping is a utility message to check if the evoting service is running.
 message Ping {
     required uint32 nonce = 1;
 }
 
+// Link message is used to link the Master Skipchain and the Election Skipchain
 message Link {
     required string pin = 1;
     required Roster roster = 2;
@@ -79,6 +85,7 @@ message LinkReply {
     optional bytes master = 1;
 }
 
+// GetElections is used to fetch the list of elections.
 message GetElections {
     required uint32 user = 1;
     required bytes master = 2;
@@ -93,6 +100,7 @@ message GetElectionsReply {
     required Master master = 3;
 }
 
+// Open is used to create a new election skipchain.
 message Open{
     required bytes id = 1;
     required Election election = 2;
@@ -105,6 +113,7 @@ message OpenReply {
     required bytes key = 2;
 }
 
+// Cast is used to cast a ballot.
 message Cast {
     required bytes id = 1;
     required Ballot ballot = 2;
@@ -116,6 +125,7 @@ message CastReply {
     required bytes id = 1;
 }
 
+// Shuffle is used to permute the ballots in an election skipchain.
 message Shuffle {
     required bytes id = 1;
     required uint32 user = 2;
@@ -125,6 +135,7 @@ message Shuffle {
 message ShuffleReply {
 }
 
+// Decrypt is used to decrypt the ballots in an election skipchain that has been shuffled.
 message Decrypt {
     required bytes id = 1;
     required uint32 user = 2;
@@ -134,7 +145,7 @@ message Decrypt {
 message DecryptReply {
 }
 
-
+// Reconstruct is used to perform Langrangean Interpolation of the decrypted shares
 message Reconstruct {
 	required bytes id = 1;
 }

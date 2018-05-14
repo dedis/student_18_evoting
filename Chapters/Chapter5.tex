@@ -1,0 +1,19 @@
+% Chapter Template
+
+\chapter{Conclusion} % Main chapter title
+
+\label{Chapter5} % Change X to a consecutive number; for referencing this chapter elsewhere, use \ref{ChapterX}
+
+\lhead{Chapter 5. \emph{Conclusion}} % Change X to a consecutive number; this is for the header on each page - perhaps a shortened title
+
+\section{Future Work}
+We introduced a distributed, auditable and resilient evoting system that scales well for up to 10,000 users. The system is expected to be used for conducting elections in EPFL in June, 2018. Despite bringing improvements over the current evoting system in place, there is scope to further optimise the evoting system. A projected improvement is to switch from Skipchains to an implementation of Omniledger \cite{omniledger} as the distributed data store. Omniledger adds support for supporting multiple transactions in a block and allows recording malicious attempts to store an invalid block. The latter would be of immense value to an evoting system, since making all attempts to compromise the integrity of an election public would make the system more accountable.
+
+As discussed in section \ref{sec:auth}, the authentication server poses a central point of failure. An improvement would be to use an OAuth like authentication mechanism, supported by Tequila, which would allow each conode to individually verify the \textit{urlaccess} token from the client. While this would incur more network calls, this approach would eliminate the need for an authentication server altogether.
+
+The evoting service can also be extended to support generalised \textit{"Choose M of N"} type of elections without relying on \textit{SCIPER}s or Tequila with suitable alternatives for user identification and authorisation. This will enable it to be used for conducting elections outside EPFL.
+
+\pagebreak
+
+\section{Source Code}
+The source code for the conodes can be found at \url{https://github.com/dedis/cothority/tree/master/evoting}. The source code for the frontend, the auth server, artillery-engine-cothority and the load testing scripts can be found at \url{https://github.com/dedis/epfl-evoting}
